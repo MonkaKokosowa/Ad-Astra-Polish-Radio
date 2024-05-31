@@ -37,90 +37,29 @@ jobs:
           MAVEN_USER: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_PASS: ${{ secrets.MAVEN_PASSWORD }}
 
-      - name: Upload NeoForge Releases (Curse/Modrinth/Github)
-        id: neoforge_release
+      - name: Upload NeoForge Artifacts
         if: contains(steps.properties.outputs.enabledPlatforms, 'neoforge')
-        uses: Kir-Antipov/mc-publish@v3.3.0
+        uses: actions/upload-artifact@v3
         with:
-          curseforge-id: ${{ vars.CURSE_ID }}
-          curseforge-token: ${{ secrets.CURSE_TOKEN }}
+          name: neoforge-artifacts
+          path: ./neoforge/build/libs/!(*-@(dev|sources|dev-shadow)).jar
 
-          modrinth-id: ${{ vars.MODRINTH_ID }}
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-
-          files: ./neoforge/build/libs/!(*-@(dev|sources|dev-shadow)).jar
-          name: "[NeoForge] Ad Astra ${{ steps.properties.outputs.version }}"
-          version: ${{ steps.properties.outputs.version }}
-          version-type: release
-          changelog-file: changelog.md
-          loaders: neoforge
-          game-versions: ${{ steps.properties.outputs.minecraftVersion }}
-          version-resolver: exact
-
-          curseforge-dependencies: |
-            resourceful-lib | depends | *
-            resourceful-config | depends | *
-            botarium | depends | *
-            cadmus | recommends | *
-            argonauts | recommends | *
-            athena | recommends | *
-            shimmer | recommends | *
-          modrinth-dependencies: |
-            resourceful-lib | depends | *
-            resourceful-config | depends | *
-            botarium | depends | *
-            cadmus | recommends | *
-            argonauts | recommends | *
-            athena-ctm | recommends | *
-            shimmer! | recommends | *
-
-      - name: Upload Fabric Releases (Curse/Modrinth/Github)
-        id: fabric_release
+      - name: Upload Fabric Artifacts
         if: contains(steps.properties.outputs.enabledPlatforms, 'fabric')
-        uses: Kir-Antipov/mc-publish@v3.3.0
+        uses: actions/upload-artifact@v3
         with:
-          curseforge-id: ${{ vars.CURSE_ID }}
-          curseforge-token: ${{ secrets.CURSE_TOKEN }}
+          name: fabric-artifacts
+          path: ./fabric/build/libs/!(*-@(dev|sources|dev-shadow)).jar
 
-          modrinth-id: ${{ vars.MODRINTH_ID }}
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-
-          files: ./fabric/build/libs/!(*-@(dev|sources|dev-shadow)).jar
-          name: "[Fabric] Ad Astra ${{ steps.properties.outputs.version }}"
-          version: ${{ steps.properties.outputs.version }}
-          version-type: release
-          changelog-file: changelog.md
-          loaders: fabric
-          game-versions: ${{ steps.properties.outputs.minecraftVersion }}
-          version-resolver: exact
-
-          curseforge-dependencies: |
-            fabric-api | depends | *
-            resourceful-lib | depends | *
-            resourceful-config | depends | *
-            botarium | depends | *
-            cadmus | recommends | *
-            argonauts | recommends | *
-            athena | recommends | *
-            shimmer | recommends | *
-          modrinth-dependencies: |
-            fabric-api | depends | *
-            resourceful-lib | depends | *
-            resourceful-config | depends | *
-            botarium | depends | *
-            cadmus | recommends | *
-            argonauts | recommends | *
-            athena-ctm | recommends | *
-            shimmer! | recommends | *
-
-      - name: Generate Discord Embed
-        run: ./gradlew injectEmbed
-        env:
-          FORGE_RELEASE_URL: ${{ steps.forge_release.outputs.modrinth-version }}
-          FABRIC_RELEASE_URL: ${{ steps.fabric_release.outputs.modrinth-version }}
-
-      - name: Upload Discord Embed
-        uses: tsickert/discord-webhook@v5.3.0
-        with:
-          webhook-url: ${{ secrets.WEBHOOK_URL }}
-          raw-data: ./build/embed.json
+#      - name: Generate Discord Embed
+#        run: ./gradlew injectEmbed
+#        env:
+#          FORGE_RELEASE_URL: ${{ steps.forge_release.outputs.modrinth-version }}
+#          FABRIC_RELEASE_URL: ${{ steps.fabric_release.outputs.modrinth-version }}
+#
+#      - name: Upload Discord Embed
+#        uses: tsickert/discord-webhook@v5.3.0
+#        with:
+#          webhook-url: ${{ secrets.WEBHOOK_URL }}
+#          raw-data: ./build/embed.json
+#
